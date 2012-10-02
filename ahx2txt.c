@@ -233,9 +233,10 @@ struct AHX_MODULE *readAHXSamples(unsigned char *songBuffer, struct AHX_MODULE *
                 strcpy(ahxMod->samples[i].Name,ahxMod->header.namesPtr);
                 
                 ahxMod->header.namesPtr += strlen(ahxMod->header.namesPtr)+1;
-				ahxMod->samples[i].filterModulationSpeed=songBuffer[parserPtr+1]&0x1F;
+				ahxMod->samples[i].filterModulationSpeed=songBuffer[parserPtr+1]&0xF8;
 				ahxMod->samples[i].waveLen=songBuffer[parserPtr+1]&0x7;
 				ahxMod->samples[i].attackLen=songBuffer[parserPtr+2];
+				ahxMod->samples[i].attackVol=songBuffer[parserPtr+3];
 				ahxMod->samples[i].decayLen=songBuffer[parserPtr+4];
 				ahxMod->samples[i].decayVol=songBuffer[parserPtr+5];
 				ahxMod->samples[i].sustainLen=songBuffer[parserPtr+6];
@@ -325,18 +326,17 @@ void printAHXSamples(struct AHX_MODULE *ahxMod)
 		printf("Sample #%d Name:%s\n",i,ahxMod->samples[i].Name);
 		printf("=================================================\n");
 		printf("Master Vol: %02X\n", ahxMod->samples[i].masterVol);
-		printf("wavelen %d (0=04,1=08,2=10,3=20,4=40,5=80)\n", ahxMod->samples[i].waveLen);
+		printf("wavelen %d (0=04,1=08,2=10,3=20,4=40,5=80)\n\n", ahxMod->samples[i].waveLen);
+		
 		printf("Attack Length %02d\n", ahxMod->samples[i].attackLen);
 		printf("Attack Volume %02d\n", ahxMod->samples[i].attackVol);
 		printf("Decay Length %02d\n", ahxMod->samples[i].decayLen);
 		printf("Decay Volume %02d\n", ahxMod->samples[i].decayVol);
 		printf("Sustain Length %02d\n", ahxMod->samples[i].sustainLen);
 		printf("Release Length %02d\n", ahxMod->samples[i].releaseLen);
-		printf("Release Volume %02d\n", ahxMod->samples[i].releaseVol);
-		printf("Filter Lower Limit %02d\n", ahxMod->samples[i].filterLowerLimit);
+		printf("Release Volume %02d\n\n", ahxMod->samples[i].releaseVol);
+
 		printf("Vibrato Delay %02d\n", ahxMod->samples[i].vibratoDelay);
-		printf("Hard Cut %02d\n", ahxMod->samples[i].hardCut);
-		printf("Release Cut %02d\n", ahxMod->samples[i].bReleaseCut);
 		printf("Vibrato Depth %02d\n", ahxMod->samples[i].vibratoDepth);
 		printf("Vibrato Speed %02d\n", ahxMod->samples[i].vibratoSpeed);
 		printf("Square Modulation Lower Limit %02d \n",ahxMod->samples[i].squareModLowerLimit);
@@ -344,7 +344,10 @@ void printAHXSamples(struct AHX_MODULE *ahxMod)
 		printf("Square Modulation Speed %02d\n", ahxMod->samples[i].squareModSpeed);
 		printf("Filter Modulation Lower Limit %02d\n", ahxMod->samples[i].filterLowerLimit);
 		printf("Filter Modulation Upper Limit %02d\n", ahxMod->samples[i].filterModUpperLimit);
-		printf("Filter Modulation Speed: %02X\n", ahxMod->samples[i].filterModulationSpeed);
+		printf("Filter Modulation Speed: %02X\n\n", ahxMod->samples[i].filterModulationSpeed);
+
+		printf("Hard Cut %02d\n", ahxMod->samples[i].hardCut);
+		printf("Release Cut %02d\n\n", ahxMod->samples[i].bReleaseCut);
 
 		printf("\n* WAVETABLE: in cmd 6=C and 7=F\n");
 		printf("Speed %02d\n",ahxMod->samples[i].speed);
