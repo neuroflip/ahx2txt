@@ -515,7 +515,7 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		//TO-DO: dump samples / sequence / ALL
+		// TO-DO: -p dump patterns by pattern number
 		printf("ahx2txt [options] <filename>\n");
 		printf("-i Dump samples\n");
 		printf("-s Dump pattern sequence\n");
