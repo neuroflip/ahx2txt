@@ -1,7 +1,9 @@
 ahx2txt
 =======
 
-ahx2txt [-i][-s] < ahxFile >
+<code>
+$ ahx2txt [-i][-s] < ahxFile >
+</code>
 
 Dumps the ahx file content into readeable ascii
 
