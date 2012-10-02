@@ -39,9 +39,11 @@ struct AHX_MODULE *readAHXHeader(unsigned char *songBuffer, struct AHX_MODULE *a
   	}
 	else
 	{
-		if((songBuffer[0]!=0x54)||(songBuffer[1]!=0x48)||(songBuffer[2]!=0x58)||(songBuffer[3]!=0x01)) 
+		if((songBuffer[0]!=0x54)||(songBuffer[1]!=0x48)||
+			(songBuffer[2]!=0x58)||(songBuffer[3]!=0x01)) 
             ahxMod->header.bIs20ModuleFormat=0;
-		else if((songBuffer[0]==0x54)&&(songBuffer[1]==0x48)&&(songBuffer[2]==0x58)&&(songBuffer[3]==0x01))
+		else if((songBuffer[0]==0x54)&&(songBuffer[1]==0x48)&&
+			(songBuffer[2]==0x58)&&(songBuffer[3]==0x01))
 			ahxMod->header.bIs20ModuleFormat=1;
     }
 	//STRING OFFSETS
@@ -82,7 +84,7 @@ struct AHX_MODULE *readAHXHeader(unsigned char *songBuffer, struct AHX_MODULE *a
 }
 
 /*****************************************************************/
-/** readAHXSubSongs: fill the subsong info	 								    **/
+/** readAHXSubSongs: fill the subsong info	 					**/
 /*****************************************************************/
 
 struct AHX_MODULE *readAHXSubSongs(unsigned char *songBuffer, struct AHX_MODULE *ahxMod)
@@ -111,7 +113,7 @@ struct AHX_MODULE *readAHXSubSongs(unsigned char *songBuffer, struct AHX_MODULE 
 }
 
 /*****************************************************************/
-/** readAHXTrackSequence: fill the track sequence info			    **/
+/** readAHXTrackSequence: fill the track sequence info			**/
 /*****************************************************************/
 
 struct AHX_MODULE *readAHXTrackSequence(unsigned char*songBuffer, struct AHX_MODULE *ahxMod)
@@ -153,7 +155,7 @@ struct AHX_MODULE *readAHXTrackSequence(unsigned char*songBuffer, struct AHX_MOD
 }
 
 /*****************************************************************/
-/** readAHXTracks: fill the track patterns 									    **/
+/** readAHXTracks: fill the track patterns 						**/
 /*****************************************************************/
 
 struct AHX_MODULE *readAHXTracks(unsigned char *songBuffer, struct AHX_MODULE *ahxMod)
@@ -165,7 +167,8 @@ struct AHX_MODULE *readAHXTracks(unsigned char *songBuffer, struct AHX_MODULE *a
 	if(ahxMod->header.totalTracks>0)
 	{
 		//allocate the sequence memory
-		ahxMod->tracks=malloc((ahxMod->header.totalTracks+1) * ahxMod->header.trackLen * sizeof(struct AHX_TRACKSTEP));
+		ahxMod->tracks=malloc((ahxMod->header.totalTracks+1) * 
+			ahxMod->header.trackLen * sizeof(struct AHX_TRACKSTEP));
 
 		for(i=0;i<((ahxMod->header.totalTracks+1)*ahxMod->header.trackLen);i++)
 		{
@@ -185,7 +188,8 @@ struct AHX_MODULE *readAHXTracks(unsigned char *songBuffer, struct AHX_MODULE *a
             {
 			    //read the track
 		        ahxMod->tracks[i].note=(songBuffer[parserPtr]>>2) & 0x3F;  //Note
-			    ahxMod->tracks[i].sample=((songBuffer[parserPtr] & 0x3)<<4) | (songBuffer[parserPtr+1]>>4); //Sample
+			    ahxMod->tracks[i].sample=((songBuffer[parserPtr] & 0x3)<<4) | 
+			    	(songBuffer[parserPtr+1]>>4); //Sample
 			    ahxMod->tracks[i].command=(songBuffer[parserPtr+1] & 0xF);  //Command
 			    ahxMod->tracks[i].param=songBuffer[parserPtr+2];     //Command param
 
@@ -206,7 +210,8 @@ struct AHX_MODULE *readAHXSamples(unsigned char *songBuffer, struct AHX_MODULE *
 {
 	int i, j;
 	
-	printf("·Parsing samples (%d samples) \n·fileLength:%d\n",ahxMod->header.totalSamples, songLength);
+	printf("·Parsing samples (%d samples) \n·fileLength:%d\n",
+		ahxMod->header.totalSamples, songLength);
 	
 	if(ahxMod->header.totalSamples>0)
 	{
@@ -260,8 +265,10 @@ struct AHX_MODULE *readAHXSamples(unsigned char *songBuffer, struct AHX_MODULE *
                     }      
 
 					ahxMod->samples[i].playList[j].fx2Command=(songBuffer[parserPtr]>>5)&0x7;
-					ahxMod->samples[i].playList[j].fx1Command=((songBuffer[parserPtr]&0x10)>>2)|((songBuffer[parserPtr]&0xC)>>2);
-					ahxMod->samples[i].playList[j].waveform=((songBuffer[parserPtr] << 1) & 6) | (songBuffer[parserPtr+1] >> 7);
+					ahxMod->samples[i].playList[j].fx1Command=((songBuffer[parserPtr]&0x10)>>2)|
+						((songBuffer[parserPtr]&0xC)>>2);
+					ahxMod->samples[i].playList[j].waveform=((songBuffer[parserPtr] << 1) & 6) | 
+						(songBuffer[parserPtr+1] >> 7);
 					ahxMod->samples[i].playList[j].bFixNote=(songBuffer[parserPtr+1]>>6)&0x1;
 					ahxMod->samples[i].playList[j].noteData=songBuffer[parserPtr+1]&0x3f;
 					ahxMod->samples[i].playList[j].fx1Data=songBuffer[parserPtr+2];
@@ -373,34 +380,34 @@ void printAHXSequence(struct AHX_MODULE *ahxMod)
 	for(i=0;i<ahxMod->header.totalLen;i++)
 	{
         printf("\n%02d:[%02d-%02d][%02d-%02d][%02d-%02d][%02d-%02d]===================\n\n", i, 
-					ahxMod->sequence[i].ch1Track, ahxMod->sequence[i].ch1Transp, ahxMod->sequence[i].ch2Track, 
-					ahxMod->sequence[i].ch2Transp, ahxMod->sequence[i].ch3Track, ahxMod->sequence[i].ch3Transp, 
-					ahxMod->sequence[i].ch4Track, ahxMod->sequence[i].ch4Transp);
+			ahxMod->sequence[i].ch1Track, ahxMod->sequence[i].ch1Transp, ahxMod->sequence[i].ch2Track, 
+			ahxMod->sequence[i].ch2Transp, ahxMod->sequence[i].ch3Track, ahxMod->sequence[i].ch3Transp, 
+			ahxMod->sequence[i].ch4Track, ahxMod->sequence[i].ch4Transp);
 
 		for(j=0;j<(ahxMod->header.trackLen);j++)
 		{
-                printf("%02d: %s %02d %X%02X  %s %02d %X%02X  %s %02d %X%02X  %s %02d %X%02X\n", j,
-				NoteTable[ahxMod->tracks[(ahxMod->sequence[i].ch1Track*ahxMod->header.trackLen)+j].note],
-				ahxMod->tracks[(ahxMod->sequence[i].ch1Track*ahxMod->header.trackLen)+j].sample,
-				ahxMod->tracks[(ahxMod->sequence[i].ch1Track*ahxMod->header.trackLen)+j].command,
-				ahxMod->tracks[(ahxMod->sequence[i].ch1Track*ahxMod->header.trackLen)+j].param,
-						//ahxMod->tracks[(ahxMod->sequence[i].ch2Track*ahxMod->header.trackLen)+j].note,
-				NoteTable[ahxMod->tracks[(ahxMod->sequence[i].ch2Track*ahxMod->header.trackLen)+j].note],
-				ahxMod->tracks[(ahxMod->sequence[i].ch2Track*ahxMod->header.trackLen)+j].sample,
-				ahxMod->tracks[(ahxMod->sequence[i].ch2Track*ahxMod->header.trackLen)+j].command,
-				ahxMod->tracks[(ahxMod->sequence[i].ch2Track*ahxMod->header.trackLen)+j].param,
+            printf("%02d: %s %02d %X%02X  %s %02d %X%02X  %s %02d %X%02X  %s %02d %X%02X\n", j,
+			NoteTable[ahxMod->tracks[(ahxMod->sequence[i].ch1Track*ahxMod->header.trackLen)+j].note],
+			ahxMod->tracks[(ahxMod->sequence[i].ch1Track*ahxMod->header.trackLen)+j].sample,
+			ahxMod->tracks[(ahxMod->sequence[i].ch1Track*ahxMod->header.trackLen)+j].command,
+			ahxMod->tracks[(ahxMod->sequence[i].ch1Track*ahxMod->header.trackLen)+j].param,
+			//ahxMod->tracks[(ahxMod->sequence[i].ch2Track*ahxMod->header.trackLen)+j].note,
+			NoteTable[ahxMod->tracks[(ahxMod->sequence[i].ch2Track*ahxMod->header.trackLen)+j].note],
+			ahxMod->tracks[(ahxMod->sequence[i].ch2Track*ahxMod->header.trackLen)+j].sample,
+			ahxMod->tracks[(ahxMod->sequence[i].ch2Track*ahxMod->header.trackLen)+j].command,
+			ahxMod->tracks[(ahxMod->sequence[i].ch2Track*ahxMod->header.trackLen)+j].param,
 
-				NoteTable[ahxMod->tracks[(ahxMod->sequence[i].ch3Track*ahxMod->header.trackLen)+j].note],
-				ahxMod->tracks[(ahxMod->sequence[i].ch3Track*ahxMod->header.trackLen)+j].sample,
-				ahxMod->tracks[(ahxMod->sequence[i].ch3Track*ahxMod->header.trackLen)+j].command,
-				ahxMod->tracks[(ahxMod->sequence[i].ch3Track*ahxMod->header.trackLen)+j].param,
+			NoteTable[ahxMod->tracks[(ahxMod->sequence[i].ch3Track*ahxMod->header.trackLen)+j].note],
+			ahxMod->tracks[(ahxMod->sequence[i].ch3Track*ahxMod->header.trackLen)+j].sample,
+			ahxMod->tracks[(ahxMod->sequence[i].ch3Track*ahxMod->header.trackLen)+j].command,
+			ahxMod->tracks[(ahxMod->sequence[i].ch3Track*ahxMod->header.trackLen)+j].param,
 
-				NoteTable[ahxMod->tracks[(ahxMod->sequence[i].ch4Track*ahxMod->header.trackLen)+j].note],
-				ahxMod->tracks[(ahxMod->sequence[i].ch4Track*ahxMod->header.trackLen)+j].sample,
-				ahxMod->tracks[(ahxMod->sequence[i].ch4Track*ahxMod->header.trackLen)+j].command,
-				ahxMod->tracks[(ahxMod->sequence[i].ch4Track*ahxMod->header.trackLen)+j].param);/*,
-				(ahxMod->sequence[i].ch3Track*ahxMod->header.trackLen)+j,ahxMod->sequence[i].ch3Track,
-				ahxMod->tracks[(ahxMod->sequence[i].ch3Track*ahxMod->header.trackLen)+j].note);*/
+			NoteTable[ahxMod->tracks[(ahxMod->sequence[i].ch4Track*ahxMod->header.trackLen)+j].note],
+			ahxMod->tracks[(ahxMod->sequence[i].ch4Track*ahxMod->header.trackLen)+j].sample,
+			ahxMod->tracks[(ahxMod->sequence[i].ch4Track*ahxMod->header.trackLen)+j].command,
+			ahxMod->tracks[(ahxMod->sequence[i].ch4Track*ahxMod->header.trackLen)+j].param);/*,
+			(ahxMod->sequence[i].ch3Track*ahxMod->header.trackLen)+j,ahxMod->sequence[i].ch3Track,
+			ahxMod->tracks[(ahxMod->sequence[i].ch3Track*ahxMod->header.trackLen)+j].note);*/
 		}
     }
 }
