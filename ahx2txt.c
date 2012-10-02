@@ -34,7 +34,7 @@ struct AHX_MODULE *readAHXHeader(unsigned char *songBuffer, struct AHX_MODULE *a
 	printf("·Parsing module header ...\n");
 
   	if(songBuffer[0]!='T' && songBuffer[1]!='H' && songBuffer[2]!='X')
-    {
+	{
 		printf("IDHEADER: File read error\n");
   	}
 	else
@@ -45,13 +45,14 @@ struct AHX_MODULE *readAHXHeader(unsigned char *songBuffer, struct AHX_MODULE *a
 		else if((songBuffer[0]==0x54)&&(songBuffer[1]==0x48)&&
 			(songBuffer[2]==0x58)&&(songBuffer[3]==0x01))
 			ahxMod->header.bIs20ModuleFormat=1;
-    }
-	//STRING OFFSETS
+	}
+	
+	//string offset + ahx mod name
     ahxMod->header.namesPtr = (char *) &songBuffer[(songBuffer[4]<<8) | songBuffer[5]];
     ahxMod->header.ahxName = malloc(strlen(ahxMod->header.namesPtr)+1);
     strcpy(ahxMod->header.ahxName, ahxMod->header.namesPtr);
-    
     ahxMod->header.namesPtr += strlen(ahxMod->header.namesPtr)+1;
+
     ahxMod->header.totalLen = ((songBuffer[6] & 0xF)<<8) | songBuffer[7];
     ahxMod->header.resPoint = (songBuffer[8]<<8) | songBuffer[9];
     ahxMod->header.trackLen = songBuffer[10];
@@ -84,13 +85,13 @@ struct AHX_MODULE *readAHXHeader(unsigned char *songBuffer, struct AHX_MODULE *a
 }
 
 /*****************************************************************/
-/** readAHXSubSongs: fill the subsong info	 					**/
+/** readAHXSubSongs: fill the subsong info 						**/
 /*****************************************************************/
 
 struct AHX_MODULE *readAHXSubSongs(unsigned char *songBuffer, struct AHX_MODULE *ahxMod)
 {
 	int i;
-    unsigned int wtmp;
+	unsigned int wtmp;
 	
 	printf("·Parsing module SubSongs info ... \n");
 
@@ -120,7 +121,7 @@ struct AHX_MODULE *readAHXTrackSequence(unsigned char*songBuffer, struct AHX_MOD
 {
 	int i=0;
 
-    printf("·Parsing sequencer info ...\n");
+	printf("·Parsing sequencer info ...\n");
 	if(ahxMod->header.totalLen > 0)
 	{
 		//allocate the sequence memory
@@ -146,7 +147,7 @@ struct AHX_MODULE *readAHXTrackSequence(unsigned char*songBuffer, struct AHX_MOD
 			ahxMod->sequence[i].ch4Track = songBuffer[parserPtr+6];
 			ahxMod->sequence[i].ch4Transp = songBuffer[parserPtr+7];
 
-            parserPtr += 8;
+			parserPtr += 8;
 		}
 	}
 	else printf("Sequence: no tracks sequenced\n");
@@ -172,29 +173,29 @@ struct AHX_MODULE *readAHXTracks(unsigned char *songBuffer, struct AHX_MODULE *a
 
 		for(i=0;i<((ahxMod->header.totalTracks+1)*ahxMod->header.trackLen);i++)
 		{
-            if(parserPtr>songLength)
-            {
-                printf("Error: end of file reached! AHX parse error\n");
-                exit(-4);
-            }
-            if(((i>=0) && (i<ahxMod->header.trackLen)) && (ahxMod->header.bTrack0))
-            {
-                ahxMod->tracks[i].note = 0x0;
-                ahxMod->tracks[i].sample = 0x0;
-                ahxMod->tracks[i].command = 0x0;
-                ahxMod->tracks[i].param = 0x0;
-            }
-            else
-            {
-			    //read the track
-		        ahxMod->tracks[i].note=(songBuffer[parserPtr]>>2) & 0x3F;  //Note
-			    ahxMod->tracks[i].sample=((songBuffer[parserPtr] & 0x3)<<4) | 
-			    	(songBuffer[parserPtr+1]>>4); //Sample
-			    ahxMod->tracks[i].command=(songBuffer[parserPtr+1] & 0xF);  //Command
-			    ahxMod->tracks[i].param=songBuffer[parserPtr+2];     //Command param
+			if(parserPtr>songLength)
+			{
+				printf("Error: end of file reached! AHX parse error\n");
+				exit(-4);
+			}
+			if(((i>=0) && (i<ahxMod->header.trackLen)) && (ahxMod->header.bTrack0))
+			{
+				ahxMod->tracks[i].note = 0x0;
+				ahxMod->tracks[i].sample = 0x0;
+				ahxMod->tracks[i].command = 0x0;
+				ahxMod->tracks[i].param = 0x0;
+			}
+			else
+			{
+				//read the track
+				ahxMod->tracks[i].note=(songBuffer[parserPtr]>>2) & 0x3F;  //Note
+				ahxMod->tracks[i].sample=((songBuffer[parserPtr] & 0x3)<<4) | 
+					(songBuffer[parserPtr+1]>>4); //Sample
+				ahxMod->tracks[i].command=(songBuffer[parserPtr+1] & 0xF);  //Command
+				ahxMod->tracks[i].param=songBuffer[parserPtr+2];     //Command param
 
 				parserPtr +=3;
-            }
+			}
 		}
 	}
 	else printf("Sequence: no tracks sequenced\n");
@@ -203,7 +204,7 @@ struct AHX_MODULE *readAHXTracks(unsigned char *songBuffer, struct AHX_MODULE *a
 }
 
 /*****************************************************************/
-/** readAHXSamples: fill the samples structure							    **/
+/** readAHXSamples: fill the samples structure					**/
 /*****************************************************************/
 
 struct AHX_MODULE *readAHXSamples(unsigned char *songBuffer, struct AHX_MODULE *ahxMod)
@@ -219,20 +220,20 @@ struct AHX_MODULE *readAHXSamples(unsigned char *songBuffer, struct AHX_MODULE *
 
 		for(i=1;i<ahxMod->header.totalSamples+1;i++)
 		{
-            if(parserPtr>songLength)
-            {
-                printf("Error: end of file reached! AHX parse error\n");
-                exit(-4);
-            }			
+		if(parserPtr>songLength)
+		{
+			printf("Error: end of file reached! AHX parse error\n");
+			exit(-4);
+		}			
 			else
 			{
-                ahxMod->samples[i].Name = malloc(sizeof(char)*(strlen(ahxMod->header.namesPtr)+1));
+				ahxMod->samples[i].Name = malloc(sizeof(char)*(strlen(ahxMod->header.namesPtr)+1));
 
-                sprintf(ahxMod->samples[i].Name,"%s",ahxMod->header.namesPtr);
-                memcpy(ahxMod->samples[i].Name, ahxMod->header.namesPtr,strlen(ahxMod->header.namesPtr));
-                strcpy(ahxMod->samples[i].Name,ahxMod->header.namesPtr);
-                
-                ahxMod->header.namesPtr += strlen(ahxMod->header.namesPtr)+1;
+				sprintf(ahxMod->samples[i].Name,"%s",ahxMod->header.namesPtr);
+				memcpy(ahxMod->samples[i].Name, ahxMod->header.namesPtr,strlen(ahxMod->header.namesPtr));
+				strcpy(ahxMod->samples[i].Name,ahxMod->header.namesPtr);
+
+				ahxMod->header.namesPtr += strlen(ahxMod->header.namesPtr)+1;
 				ahxMod->samples[i].filterModulationSpeed=songBuffer[parserPtr+1]&0xF8;
 				ahxMod->samples[i].waveLen=songBuffer[parserPtr+1]&0x7;
 				ahxMod->samples[i].attackLen=songBuffer[parserPtr+2];
@@ -259,11 +260,11 @@ struct AHX_MODULE *readAHXSamples(unsigned char *songBuffer, struct AHX_MODULE *
 				ahxMod->samples[i].playList = malloc(sizeof(struct AHX_WAVETABLE)*ahxMod->samples[i].len);
 				for(j=0;j<ahxMod->samples[i].len;j++)
 				{
-                    if(parserPtr>songLength)
-                    {
-                        printf("Error: end of file reached! AHX parse error\n");
-                        exit(-4);
-                    }      
+					if(parserPtr>songLength)
+					{
+						printf("Error: end of file reached! AHX parse error\n");
+						exit(-4);
+					}      
 
 					ahxMod->samples[i].playList[j].fx2Command=(songBuffer[parserPtr]>>5)&0x7;
 					ahxMod->samples[i].playList[j].fx1Command=((songBuffer[parserPtr]&0x10)>>2)|
@@ -296,16 +297,16 @@ void printAHXHeaderInfo(struct AHX_MODULE *ahxMod)
 	printf("=================================================\n");
 
 	if(!ahxMod->header.bIs20ModuleFormat)
-    	printf("IDHEADER: AXH1.00 or AHX1.27 Module format\n");
-    else
-    	printf("IDHEADER: AXH2.0 Module format\n");
-    printf("length = %d\n",ahxMod->header.totalLen);
-    printf("reset point = %d\n",ahxMod->header.resPoint);
-    printf("track length = %d\n",ahxMod->header.trackLen);
-    printf("patterns = %d\n",ahxMod->header.totalTracks);
-    printf("samples = %d\n",ahxMod->header.totalSamples);
-    printf("subSongs = %d\n",ahxMod->header.totalSubSongs);
-    printf("track 0 is saved = %d\n",ahxMod->header.bTrack0);
+		printf("IDHEADER: AXH1.00 or AHX1.27 Module format\n");
+	else
+		printf("IDHEADER: AXH2.0 Module format\n");
+	printf("length = %d\n",ahxMod->header.totalLen);
+	printf("reset point = %d\n",ahxMod->header.resPoint);
+	printf("track length = %d\n",ahxMod->header.trackLen);
+	printf("patterns = %d\n",ahxMod->header.totalTracks);
+	printf("samples = %d\n",ahxMod->header.totalSamples);
+	printf("subSongs = %d\n",ahxMod->header.totalSubSongs);
+	printf("track 0 is saved = %d\n",ahxMod->header.bTrack0);
 }
 
 /*****************************************************************/
@@ -382,14 +383,14 @@ void printAHXSequence(struct AHX_MODULE *ahxMod)
 	
 	for(i=0;i<ahxMod->header.totalLen;i++)
 	{
-        printf("\n%02d:[%02d-%02d][%02d-%02d][%02d-%02d][%02d-%02d]===================\n\n", i, 
+			printf("\n%02d:[%02d-%02d][%02d-%02d][%02d-%02d][%02d-%02d]===================\n\n", i, 
 			ahxMod->sequence[i].ch1Track, ahxMod->sequence[i].ch1Transp, ahxMod->sequence[i].ch2Track, 
 			ahxMod->sequence[i].ch2Transp, ahxMod->sequence[i].ch3Track, ahxMod->sequence[i].ch3Transp, 
 			ahxMod->sequence[i].ch4Track, ahxMod->sequence[i].ch4Transp);
 
 		for(j=0;j<(ahxMod->header.trackLen);j++)
 		{
-            printf("%02d: %s %02d %X%02X  %s %02d %X%02X  %s %02d %X%02X  %s %02d %X%02X\n", j,
+			printf("%02d: %s %02d %X%02X  %s %02d %X%02X  %s %02d %X%02X  %s %02d %X%02X\n", j,
 			NoteTable[ahxMod->tracks[(ahxMod->sequence[i].ch1Track*ahxMod->header.trackLen)+j].note],
 			ahxMod->tracks[(ahxMod->sequence[i].ch1Track*ahxMod->header.trackLen)+j].sample,
 			ahxMod->tracks[(ahxMod->sequence[i].ch1Track*ahxMod->header.trackLen)+j].command,
@@ -421,27 +422,27 @@ void printAHXSequence(struct AHX_MODULE *ahxMod)
 
 struct AHX_MODULE *loadAHX(char *strFilename)
 {
-    struct AHX_MODULE *ahxMod;    
-    FILE *fp;
-    unsigned char songBuffer[65536];
+	struct AHX_MODULE *ahxMod;    
+	FILE *fp;
+	unsigned char songBuffer[65536];
 
 	//Open the file
-  	if((fp=fopen(strFilename, "r"))==NULL)
-  	{
-    		printf("Can't load AHX file\n");
-    		exit(-2);
-  	}
+	if((fp=fopen(strFilename, "r"))==NULL)
+	{
+		printf("Can't load AHX file\n");
+		exit(-2);
+	}
 
-    //read the entire file
-    fseek(fp,0,SEEK_SET);
-    songLength = fread(songBuffer, 1, 65536, fp);
-    if((songLength < 14) || (songLength>=65536))
-    {
-        printf("AHX file corrupted?");
-        exit(-3);
-    }
-    fclose(fp);
-    //parse ahx buffer
+	//read the entire file
+	fseek(fp,0,SEEK_SET);
+	songLength = fread(songBuffer, 1, 65536, fp);
+	if((songLength < 14) || (songLength>=65536))
+	{
+		printf("AHX file corrupted?");
+		exit(-3);
+	}
+	fclose(fp);
+	//parse ahx buffer
 	ahxMod = malloc(sizeof(struct AHX_MODULE));
 	ahxMod = readAHXHeader(songBuffer, ahxMod);
 	ahxMod = readAHXSubSongs(songBuffer, ahxMod);
@@ -531,6 +532,6 @@ int main(int argc, char *argv[])
 	if(userWantsSamples)
 		printAHXSamples(ahxModule);
 
-    freeAhxModule(ahxModule);
+	freeAhxModule(ahxModule);
 	return 0;
 }
