@@ -1,4 +1,14 @@
 ahx2txt
 =======
 
-a simple cmd tool to dump an amiga AHX music module file into readable ascii text 
+ahx2txt [-i][-s] < ahxFile >
+
+Dumps the ahx file content into readeable ascii
+
+based on http://xmms-ahx.sourceforge.net/
+
+ahx file info: http://lclevy.free.fr/exotica/ahx/ahxformat.txt
+
+AHX tracker: http://amigascne.org/abyss/ahx/
+
+neuroflip/303bcn
