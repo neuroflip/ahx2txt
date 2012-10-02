@@ -464,9 +464,9 @@ void freeAhxModule(struct AHX_MODULE *ahxMod)
 	free(ahxMod);
 }
 
-/*****************************************************************/
-/** 													 MAiN   **/
-/*****************************************************************/
+/****************************************************************/
+/**														MAiN   **/
+/****************************************************************/
 
 int main(int argc, char *argv[])
 {
@@ -483,9 +483,9 @@ int main(int argc, char *argv[])
 	}
 	else if(argc==3)
 	{
-		if(strcmp(argv[1],"-i")==0)
+		if(!strcmp(argv[1],"-i"))
 			userWantsSamples = 1;
-		else if(strcmp(argv[1],"-s")==0)
+		else if(!strcmp(argv[1],"-s"))
 			userWantsSequence = 1;
 		else
 		{
@@ -498,7 +498,8 @@ int main(int argc, char *argv[])
 	}
 	else if(argc==4)
 	{
-		if((strcmp(argv[1],"-i")==0) && (strcmp(argv[1],"-s")==0))
+		if(((!strcmp(argv[1],"-i")) && (!strcmp(argv[2],"-s"))) ||
+			((!strcmp(argv[1],"-s")) && (!strcmp(argv[2],"-i"))))
 		{
 			userWantsSequence = 1;
 			userWantsSamples = 1;
