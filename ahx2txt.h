@@ -1,4 +1,3 @@
-
 struct AHX_HEADER
 {
 	char *ahxName;
@@ -83,11 +82,11 @@ struct AHX_MODULE
 	struct AHX_SAMPLE *samples;
 };
 
-struct AHX_MODULE *readAHXHeader(unsigned char *songBuffer, struct AHX_MODULE *ahxMod);
-struct AHX_MODULE *readAHXSubSongs(unsigned char *songBuffer, struct AHX_MODULE *ahxMod);
-struct AHX_MODULE *readAHXTrackSequence(unsigned char*songBuffer, struct AHX_MODULE *ahxMod);
-struct AHX_MODULE *readAHXTracks(unsigned char *songBuffer, struct AHX_MODULE *ahxMod);
-struct AHX_MODULE *readAHXSamples(unsigned char *songBuffer, struct AHX_MODULE *ahxMod);
+void readAHXHeader(unsigned char *songBuffer, struct AHX_MODULE *ahxMod);
+void readAHXSubSongs(unsigned char *songBuffer, struct AHX_MODULE *ahxMod);
+void readAHXTrackSequence(unsigned char*songBuffer, struct AHX_MODULE *ahxMod);
+void readAHXTracks(unsigned char *songBuffer, struct AHX_MODULE *ahxMod);
+void readAHXSamples(unsigned char *songBuffer, struct AHX_MODULE *ahxMod);
 void printAHXHeaderInfo(struct AHX_MODULE *ahxMod);
 void printAHXSamples(struct AHX_MODULE *ahxMod);
 void printAHXSequence(struct AHX_MODULE *ahxMod);
