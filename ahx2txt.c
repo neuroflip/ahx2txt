@@ -29,7 +29,7 @@ int songLength = 0;
 /** readAHXHeader: fill the AHX_MODULE.AHX_HEADER information   **/
 /*****************************************************************/
 
-struct AHX_MODULE *readAHXHeader(unsigned char *songBuffer, struct AHX_MODULE *ahxMod)
+void readAHXHeader(unsigned char *songBuffer, struct AHX_MODULE *ahxMod)
 {
 	printf("·Parsing module header ...\n");
 
@@ -81,14 +81,13 @@ struct AHX_MODULE *readAHXHeader(unsigned char *songBuffer, struct AHX_MODULE *a
 		ahxMod->header.cia=(int)btmp;
 	}
 */
-	return ahxMod;
 }
 
 /*****************************************************************/
 /** readAHXSubSongs: fill the subsong info 						**/
 /*****************************************************************/
 
-struct AHX_MODULE *readAHXSubSongs(unsigned char *songBuffer, struct AHX_MODULE *ahxMod)
+void readAHXSubSongs(unsigned char *songBuffer, struct AHX_MODULE *ahxMod)
 {
 	int i;
 	unsigned int wtmp;
@@ -109,15 +108,13 @@ struct AHX_MODULE *readAHXSubSongs(unsigned char *songBuffer, struct AHX_MODULE 
             parserPtr+=2;
 		}
 	}
-
-	return ahxMod;
 }
 
 /*****************************************************************/
 /** readAHXTrackSequence: fill the track sequence info			**/
 /*****************************************************************/
 
-struct AHX_MODULE *readAHXTrackSequence(unsigned char*songBuffer, struct AHX_MODULE *ahxMod)
+void readAHXTrackSequence(unsigned char*songBuffer, struct AHX_MODULE *ahxMod)
 {
 	int i=0;
 
@@ -151,15 +148,13 @@ struct AHX_MODULE *readAHXTrackSequence(unsigned char*songBuffer, struct AHX_MOD
 		}
 	}
 	else printf("Sequence: no tracks sequenced\n");
-
-	return ahxMod;
 }
 
 /*****************************************************************/
 /** readAHXTracks: fill the track patterns 						**/
 /*****************************************************************/
 
-struct AHX_MODULE *readAHXTracks(unsigned char *songBuffer, struct AHX_MODULE *ahxMod)
+void readAHXTracks(unsigned char *songBuffer, struct AHX_MODULE *ahxMod)
 {
 	int i=0;
 
@@ -199,15 +194,13 @@ struct AHX_MODULE *readAHXTracks(unsigned char *songBuffer, struct AHX_MODULE *a
 		}
 	}
 	else printf("Sequence: no tracks sequenced\n");
-
-	return ahxMod;
 }
 
 /*****************************************************************/
 /** readAHXSamples: fill the samples structure					**/
 /*****************************************************************/
 
-struct AHX_MODULE *readAHXSamples(unsigned char *songBuffer, struct AHX_MODULE *ahxMod)
+void readAHXSamples(unsigned char *songBuffer, struct AHX_MODULE *ahxMod)
 {
 	int i, j;
 	
@@ -282,8 +275,6 @@ struct AHX_MODULE *readAHXSamples(unsigned char *songBuffer, struct AHX_MODULE *
 		}
 	}
 	else printf("Samples: no samples included\n");
-
-	return ahxMod;
 }
 
 /*****************************************************************/
@@ -444,11 +435,11 @@ struct AHX_MODULE *loadAHX(char *strFilename)
 	fclose(fp);
 	//parse ahx buffer
 	ahxMod = malloc(sizeof(struct AHX_MODULE));
-	ahxMod = readAHXHeader(songBuffer, ahxMod);
-	ahxMod = readAHXSubSongs(songBuffer, ahxMod);
-	ahxMod = readAHXTrackSequence(songBuffer, ahxMod);
-    ahxMod = readAHXTracks(songBuffer, ahxMod);
-	ahxMod = readAHXSamples(songBuffer, ahxMod);
+	readAHXHeader(songBuffer, ahxMod);
+	readAHXSubSongs(songBuffer, ahxMod);
+	readAHXTrackSequence(songBuffer, ahxMod);
+    readAHXTracks(songBuffer, ahxMod);
+	readAHXSamples(songBuffer, ahxMod);
 
 	return ahxMod;
 }
@@ -466,6 +457,13 @@ void freeAhxModule(struct AHX_MODULE *ahxMod)
 	}
 	free(ahxMod->samples);
 	free(ahxMod);
+}
+
+void printHelp()
+{
+	printf("ahx2txt [options] <filename>\n");
+	printf("-i Dump samples\n");
+	printf("-s Dump pattern sequence\n");
 }
 
 /****************************************************************/
@@ -493,9 +491,7 @@ int main(int argc, char *argv[])
 			userWantsSequence = 1;
 		else
 		{
-			printf("ahx2txt [options] <filename>\n");
-			printf("-i Dump samples\n");
-			printf("-s Dump pattern sequence\n");
+			printHelp();
 			exit(-1);
 		} 
 		ahxModule=loadAHX(argv[2]);
@@ -510,19 +506,14 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			printf("ahx2txt [options] <filename>\n");
-			printf("-i Dump samples\n");
-			printf("-s Dump pattern sequence\n");
+			printHelp();
 			exit(-1);
 		} 
 		ahxModule=loadAHX(argv[3]);
 	}
 	else
 	{
-		// TO-DO: -p dump patterns by pattern number
-		printf("ahx2txt [options] <filename>\n");
-		printf("-i Dump samples\n");
-		printf("-s Dump pattern sequence\n");
+		printHelp();
 		exit(-1);
 	}
 
