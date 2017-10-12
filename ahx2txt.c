@@ -304,6 +304,17 @@ void printAHXHeaderInfo(struct AHX_MODULE *ahxMod)
 /** printAHXSamples: print the samples info						**/
 /*****************************************************************/
 
+void printWaveLen(value) {
+	switch(value) {
+		case 0: printf("WaveLen: 04\n"); break;
+		case 1: printf("WaveLen: 08\n"); break;
+		case 2: printf("WaveLen: 10\n"); break;
+		case 3: printf("WaveLen: 20\n"); break;
+		case 4: printf("WaveLen: 40\n"); break;
+		case 5: printf("WaveLen: 80\n"); break;
+	}
+}
+
 void printAHXSamples(struct AHX_MODULE *ahxMod)
 {
 	int i, j;
@@ -318,7 +329,7 @@ void printAHXSamples(struct AHX_MODULE *ahxMod)
 		printf("Sample #%d Name:%s\n",i,ahxMod->samples[i].Name);
 		printf("=================================================\n");
 		printf("Master Vol: %02X\n", ahxMod->samples[i].masterVol);
-		printf("wavelen %d (0=04,1=08,2=10,3=20,4=40,5=80)\n\n", ahxMod->samples[i].waveLen);
+		printWaveLen(ahxMod->samples[i].waveLen);
 		
 		printf("Attack Length %02d\n", ahxMod->samples[i].attackLen);
 		printf("Attack Volume %02d\n", ahxMod->samples[i].attackVol);
