@@ -227,7 +227,9 @@ void readAHXSamples(unsigned char *songBuffer, struct AHX_MODULE *ahxMod)
 				strcpy(ahxMod->samples[i].Name,ahxMod->header.namesPtr);
 
 				ahxMod->header.namesPtr += strlen(ahxMod->header.namesPtr)+1;
-				ahxMod->samples[i].filterModulationSpeed=songBuffer[parserPtr+1]&0xF8;
+				ahxMod->samples[i].masterVol=songBuffer[parserPtr];
+				ahxMod->samples[i].filterModulationSpeed=((songBuffer[parserPtr+1]&0xF8)>>3) | 
+					((songBuffer[parserPtr+12]&0x40)>>2) | ((songBuffer[parserPtr+19]&0x40)>>2);
 				ahxMod->samples[i].waveLen=songBuffer[parserPtr+1]&0x7;
 				ahxMod->samples[i].attackLen=songBuffer[parserPtr+2];
 				ahxMod->samples[i].attackVol=songBuffer[parserPtr+3];
@@ -328,7 +330,7 @@ void printAHXSamples(struct AHX_MODULE *ahxMod)
 		printf("\n=================================================\n");
 		printf("Sample #%d Name:%s\n",i,ahxMod->samples[i].Name);
 		printf("=================================================\n");
-		printf("Master Vol: %02X\n", ahxMod->samples[i].masterVol);
+		printf("Master Vol: %02d\n", ahxMod->samples[i].masterVol);
 		printWaveLen(ahxMod->samples[i].waveLen);
 		
 		printf("Attack Length %02d\n", ahxMod->samples[i].attackLen);
@@ -347,7 +349,7 @@ void printAHXSamples(struct AHX_MODULE *ahxMod)
 		printf("Square Modulation Speed %02d\n", ahxMod->samples[i].squareModSpeed);
 		printf("Filter Modulation Lower Limit %02d\n", ahxMod->samples[i].filterLowerLimit);
 		printf("Filter Modulation Upper Limit %02d\n", ahxMod->samples[i].filterModUpperLimit);
-		printf("Filter Modulation Speed: %02X\n\n", ahxMod->samples[i].filterModulationSpeed);
+		printf("Filter Modulation Speed: %02d\n\n", ahxMod->samples[i].filterModulationSpeed);
 
 		printf("Hard Cut %02d\n", ahxMod->samples[i].hardCut);
 		printf("Release Cut %02d\n\n", ahxMod->samples[i].bReleaseCut);
